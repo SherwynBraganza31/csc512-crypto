@@ -10,8 +10,8 @@ def mod_inv(a, n):
     if a > n:
         a = a % n
 
-    #inner_mod_inv(n, x, y)
 
 #def inner_mod_inv(n, x, y)
+
 
 

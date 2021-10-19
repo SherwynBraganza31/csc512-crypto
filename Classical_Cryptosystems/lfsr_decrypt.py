@@ -1,5 +1,6 @@
 import numpy as np
 
+### Work Needs to be done. Not fully functional
 
 #################################################
 # Get input and remove delimiters

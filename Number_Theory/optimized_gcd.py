@@ -37,13 +37,14 @@ def gcd(y, x):
     return inner_gcd(x, y)
 
 # The recursive portion of the gcd cycle.
-def inner_gcd(x, y):
+def inner_gcd(y, x):
     if x == 0:
         return y
     return inner_gcd(y % x, x)
 
-#def inner_ex_gcd(a, x, y)
-#    if x == 0:
-#       return (y, 0, 1)
-#
-#    inv, x, y = inner_ex_gcd(x, )
+def inner_ex_gcd(y, x):
+    if x == 0:
+        return (y, 0, 1)
+    else:
+        g, b, a = inner_ex_gcd(x, x%y)
+        return (g, a - (y // x) * b, b)
