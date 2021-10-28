@@ -21,7 +21,17 @@
 from numpy.linalg import inv
 import numpy as np
 
+# TODO Get user created matrix
 ciphering_matrix = np.matrix('1 2 3; 4 5 6; 11 9 8')
+
+# TODO Modular Matrix Inverse
+# ciphering_matrix_inv = inv(ciphering_matrix)
+ciphering_matrix_inv = np.matrix('22 5 1; 6 17 24; 15 13 1')
+
+# TODO Calculate the number of rows and cols
+col_width = 3
+
+
 mode = 0
 print("Modes:\n" +
       "a: Encryption Mode - Provide keyword and the plaintext. The program will encrypt the plaintext and display it.\n" +
@@ -45,21 +55,26 @@ if mode == "a":
         except ValueError:
             break
 
-    if len(plainText)%3 != 0:
-        for i in range(0, len(plainText)%3 - 1):
+    # if the plainText is short of characters
+    # in other words if length of plaintext % col_width != 0
+    if len(plainText) % 3 != 0:
+        for i in range(0, len(plainText) % col_width - 1):
+            # append an arbitrary x
             plainText.append('x')
 
-    for i in range(0, len(plainText), 3):
+    for i in range(0, len(plainText), col_width):
+        # formulate a 1x3 matrix (temp) s.t temp*cipher_matrix = ciphertext
         temp = []
-        for j in range(0, 3):
+        for j in range(0, col_width):
             temp.append(int(ord(plainText[i+j]) - ord('a')))
-        temp = np.array(temp)
-        temp = np.squeeze(temp)
-        temp = np.matmul(temp, ciphering_matrix)
-        temp = temp.tolist()
-        for j in range(0, 3):
-            cipherText.append((int(temp[0][j]) % 26) + ord('a'))
+        temp = np.array(temp)   # convert temp into a numpy array
+        temp = np.squeeze(temp)  # reshape temp into a n*n matrix where n = col_width
+        temp = np.matmul(temp, ciphering_matrix)  # matrix multiplication
+        temp = temp.tolist()  # convert temp to list
+        for j in range(0, col_width):
+            cipherText.append((int(temp[0][j]) % 26) + ord('a'))  # append it to the ciphertext
 
+    print("Ciphertext = ", end="")
     for i in range(0, len(cipherText)):
         print(chr(cipherText[i]), end="")
 
@@ -67,13 +82,7 @@ if mode == "a":
 else:
     cipherText = input("Enter in the cipherText: ")
     cipherText = list(str(cipherText))
-
-    col_width = 3
     plainText = []
-
-    # TODO Modular Matrix Inverse
-    #ciphering_matrix_inv = inv(ciphering_matrix)
-    ciphering_matrix_inv = np.matrix('22 5 1; 6 17 24; 15 13 1')
 
     # loop to eliminate all spaces in the plaintext
     while True:
@@ -83,15 +92,17 @@ else:
             break
 
     for i in range(0, len(cipherText), col_width):
+        # formulate a 1x3 matrix (temp) s.t temp*cipher_matrix_inv = plaintext
         temp = []
         for j in range(0, col_width):
             temp.append(int(ord(cipherText[i+j]) - ord('a')))
-        temp = np.array(temp)
-        temp = np.squeeze(temp)
-        temp = np.matmul(temp, ciphering_matrix_inv)
-        temp = temp.tolist()
-        for j in range(0, 3):
-            plainText.append((int(temp[0][j]) % 26) + ord('a'))
+        temp = np.array(temp)  # convert temp into a numpy array
+        temp = np.squeeze(temp)  # reshape temp into a n*n matrix where n = col_width
+        temp = np.matmul(temp, ciphering_matrix_inv)  # matrix multiplication
+        temp = temp.tolist()  # convert temp to a list
+        for j in range(0, col_width):
+            plainText.append((int(temp[0][j]) % 26) + ord('a'))  # append it to the plaintext vector
 
+    print("Plaintext = ", end="")
     for i in range(0, len(plainText)):
         print(chr(plainText[i]), end="")
