@@ -20,13 +20,14 @@
 #############################################################################
 from numpy.linalg import inv
 import numpy as np
+from Number_Theory.mod_inv import matrix_mod_inv
 
 # TODO Get user created matrix
 ciphering_matrix = np.matrix('1 2 3; 4 5 6; 11 9 8')
 
 # TODO Modular Matrix Inverse
-# ciphering_matrix_inv = inv(ciphering_matrix)
-ciphering_matrix_inv = np.matrix('22 5 1; 6 17 24; 15 13 1')
+ciphering_matrix_inv = matrix_mod_inv(ciphering_matrix, 26)
+# ciphering_matrix_inv = np.matrix('22 5 1; 6 17 24; 15 13 1')
 
 # TODO Calculate the number of rows and cols
 col_width = 3

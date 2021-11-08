@@ -42,9 +42,9 @@ def inner_gcd(y, x):
         return y
     return inner_gcd(y % x, x)
 
-def inner_ex_gcd(y, x):
-    if x == 0:
-        return (y, 0, 1)
+def inner_ex_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
     else:
-        g, b, a = inner_ex_gcd(x, x%y)
-        return (g, a - (y // x) * b, b)
+        g, y, x = inner_ex_gcd(b % a, a)
+        return g, x - (b // a) * y, y
