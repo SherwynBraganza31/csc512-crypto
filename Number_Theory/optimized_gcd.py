@@ -37,14 +37,23 @@ def gcd(y, x):
     return inner_gcd(x, y)
 
 # The recursive portion of the gcd cycle.
-def inner_gcd(y, x):
+def inner_gcd(x, y):
     if x == 0:
         return y
     return inner_gcd(y % x, x)
 
+# the inner portion of the recurysive cycle, returns extra values used in the extended gcd
 def inner_ex_gcd(a, b):
     if a == 0:
         return b, 0, 1
     else:
         g, y, x = inner_ex_gcd(b % a, a)
         return g, x - (b // a) * y, y
+
+def main():
+    x, y = int(input("Enter in two numbers to find the gcd of: ")), int(input())
+    print("The gcd of ", x, " and ", y, " is: ", gcd(y, x))
+
+
+if __name__ == "__main__":
+    main()
