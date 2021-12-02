@@ -5,8 +5,6 @@
 # A number is prime if for all 'a' belonging to [2, p-1], a^(p-1) gives you
 # a 1.
 #
-#
-# TODO Implement MILLER_RABIN
 # TODO Implement SOLOVAY_STRASSEN
 #############################################################################
 import random
