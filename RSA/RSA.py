@@ -18,11 +18,8 @@ def _RSA_decrypt(message, e, n):
     return "".join(plainText)
 
 def main():
-    p = rando_prime(pow(2, 20), pow(2,21))
-    q = p
-    while q == p:
-        q = rando_prime(pow(2, 20), pow(2,21))
-
+    p = rando_prime(pow(2, 22), pow(2,24))
+    q = rando_prime(pow(2, 20), pow(2,21))
     n = p*q
     phi_n = (p-1) * (q-1)
 
@@ -38,9 +35,10 @@ def main():
     for i in range (0, len(cipherText)): readable_cipherText.append(chr(cipherText[i]%256))
     readable_cipherText = "".join(readable_cipherText)
 
-    print("The cipherText is: ", readable_cipherText)
+    print("The cipherText is: ", readable_cipherText) # This has no significance but I just thought it would be cool!
     print("The plainText is: ", _RSA_decrypt(cipherText, e, n))
 
 
 if __name__ == "__main__":
     main()
+
