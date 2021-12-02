@@ -1,5 +1,5 @@
 import random
-from is_prime import is_prime
+from is_prime import is_prime, test_case
 
 _LOWER_BOUND = 2
 _UPPER_BOUND = 512
@@ -15,24 +15,28 @@ _UPPER_BOUND = 512
 #############################################################################
 
 def rando_prime(n, m):
-    # get a random number between the range [n,m]. m <
+    # get a random number between the range [n,m].
     p = random.randint(n, m)
-    past_non_primes = [p]
-
     # if p is not prime, increment p by 1
-    while (not is_prime(p)) or p > m:
-        p = p + 1
+    while not is_prime(p):
+        p = random.randint(n, m)
 
     return p
 
 def main():
-    n = int(input("Enter in a number between 2 and 256: "))
+    n = int(input("Enter in a number between 2 and 512: "))
 
     while n < _LOWER_BOUND or n > _UPPER_BOUND:
         print("Number not within range. ", end="")
-        n = int(input("Enter in a number between 2 and 256: "))
+        n = int(input("Enter in a number between 2 and 512: "))
     print("A prime between (2^" + str(n+1) + " - 1) and (2^" + str(n) + " - 1) is: " + str(rando_prime(pow(2,n)-1, pow(2,n+1)-1)))
 
+def test():
+    for i in range(0, 10):
+        p = rando_prime(2**412, 2**511)
+        print(p)
+        test_case(p)
+        print("")
 
 if __name__ == "__main__":
-    main()
+    test()
