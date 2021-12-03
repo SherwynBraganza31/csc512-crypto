@@ -18,8 +18,8 @@ def _RSA_decrypt(message, e, n):
     return "".join(plainText)
 
 def main():
-    p = rando_prime(pow(2, 22), pow(2,24))
-    q = rando_prime(pow(2, 20), pow(2,21))
+    p = rando_prime(pow(2, 127), pow(2,128))
+    q = rando_prime(pow(2, 122), pow(2,123))
     n = p*q
     phi_n = (p-1) * (q-1)
 
