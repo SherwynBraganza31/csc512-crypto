@@ -11,11 +11,17 @@ import random
 from Number_Theory.jacobi import jacobi
 
 def fermat_primality(p: int) -> bool:
+    if p == 2:
+        return True
+    if p == 3:
+        return True
+    if p == 5:
+        return True
     if(p%2 == 0):
         return False
 
     for i in range(0, 30):
-        temp = random.randint(2,p-2)
+        temp = random.randint(2, p-2)
         if pow(temp, p-1, p) != 1:
             return False
     return True

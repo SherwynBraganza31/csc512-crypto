@@ -2,7 +2,7 @@ from baby_des_ed import baby_des_encrypt, S_box_1, S_box_2, expander
 from barrel_shift import _barrel_shift_right, _barrel_shift_left
 import random
 
-_SAMPLE_SIZE = 10
+_SAMPLE_SIZE = 12
 _ROUNDS = 4
 
 def four_round_diff_crypt(hidden_key, rounds):
@@ -16,32 +16,55 @@ def four_round_diff_crypt(hidden_key, rounds):
         L0.append(random_int)
 
     L0_star = []
-    R0 = [0b011011] * _SAMPLE_SIZE
+    for i in range(0, _SAMPLE_SIZE):
+        random_int = random.randint(1, 15)
+        while L0_star.count(random_int) > 0:
+            random_int = random.randint(1, 15)
+            if random_int ^ L0[i] == 0b011010:
+                break
+        L0_star.append(random_int)
+
+    R0 = []
+    for i in range(0, _SAMPLE_SIZE):
+        random_int = random.randint(1, 15)
+        while R0.count(random_int) > 0:
+            random_int = random.randint(1, 15)
+        R0.append(random_int)
+
+    R0_star = []
+    for i in range(0, _SAMPLE_SIZE):
+        random_int = random.randint(1, 15)
+        while R0.count(random_int) > 0:
+            random_int = random.randint(1, 15)
+            if random_int ^ R0[i] == 0b001100:
+                break
+        R0_star.append(random_int)
+
 
     L4, R4, L4_star, R4_star = [], [], [], []
 
     for i in range(0, _SAMPLE_SIZE):
-        # Encrypt L1 and R1 in 'r' rounds and store L4 and R4
-        temp = baby_des_encrypt((L1[i] << 6) | (R1[i]), _barrel_shift_left(hidden_key, 1), S_box_1, S_box_2, rounds)
+        # Encrypt L0 and R0 in 'r' rounds and store L4 and R4
+        temp = baby_des_encrypt((L0[i] << 6) | (R0[i]), _barrel_shift_left(hidden_key, 0), S_box_1, S_box_2, rounds)
         L4.append(temp >> 6)
         R4.append(temp & 0b000000111111)
 
-        # Encrypt L1_star and R1_star(same as R1) in 'r' rounds and store L4 and R4
-        temp = baby_des_encrypt((L1_star[i] << 6) | (R1[i]), _barrel_shift_left(hidden_key, 1), S_box_1, S_box_2,
+        # Encrypt L0_star and R0_star(same as R0) in 'r' rounds and store L4 and R4
+        temp = baby_des_encrypt((L0_star[i] << 6) | (R0[i]), _barrel_shift_left(hidden_key, 0), S_box_1, S_box_2,
                                 rounds)
         L4_star.append(temp >> 6)
         R4_star.append(temp & 0b000000111111)
 
     #############################################################################
     # From mathematically working out Differential Cryptanalysis, we end up with an this equation
-    # Rn' ^ L1' = f(Ln, Kn) ^ f(Ln_star, Kn)
+    # Rn' ^ L0' = f(Ln, Kn) ^ f(Ln_star, Kn)
     #
-    # The net step attempts to calculate Rn' ^ L1' and store it as a target to be achieved.
+    # The net step attempts to calculate Rn' ^ L0' and store it as a target to be achieved.
     # More intuitively the target_LHS is what the XOR of the S-box outputs should evaluate.
     #############################################################################
     target_LHS = []
     for i in range(0, _SAMPLE_SIZE):
-        target_LHS.append((R4[i] ^ R4_star[i]) ^ (L1[i] ^ L1_star[i]))
+        target_LHS.append((R4[i] ^ R4_star[i]) ^ 0b001100)
 
     #############################################################################
     # The next step involves reverse engineering the S-boxes and finding the
@@ -129,9 +152,9 @@ def four_round_diff_crypt(hidden_key, rounds):
     # #############################################################################
     # possible_key = _barrel_shift_right((U_key << 5) | (L_key << 1) | 1, rounds)
     #
-    # test1 = baby_des_encrypt((L1[0] << 6) | (R1[0]), _barrel_shift_left(possible_key, 1), S_box_1, S_box_2, rounds)
-    # test2 = baby_des_encrypt((L1[1] << 6) | (R1[1]), _barrel_shift_left(possible_key, 1), S_box_1, S_box_2, rounds)
-    # if test1 != ((L4[0] << 6) | R4[0]) and test2 != ((L4[1] << 6) | R4[1]):  # and baby_des_encrypt((L1[1] << 6) | (R1[1]), possible_key, S_box_1, S_box_2, 3) == ((L4[1] << 3) | R4[1]):
+    # test1 = baby_des_encrypt((L0[0] << 6) | (R0[0]), _barrel_shift_left(possible_key, 1), S_box_1, S_box_2, rounds)
+    # test2 = baby_des_encrypt((L0[1] << 6) | (R0[1]), _barrel_shift_left(possible_key, 1), S_box_1, S_box_2, rounds)
+    # if test1 != ((L4[0] << 6) | R4[0]) and test2 != ((L4[1] << 6) | R4[1]):  # and baby_des_encrypt((L0[1] << 6) | (R0[1]), possible_key, S_box_1, S_box_2, 3) == ((L4[1] << 3) | R4[1]):
     #     possible_key = possible_key ^ 0b001000000
 
     return lower_key_freq, upper_key_freq
@@ -164,11 +187,11 @@ def test_cases():
     #############################################################################
     possible_key = _barrel_shift_right((U_key << 5) | (L_key << 1) | 1, _ROUNDS)
 
-    L1 = 0b000111
-    R1 = 0b011011
-    test1 = baby_des_encrypt((L1 << 6) | (R1), _barrel_shift_left(rand_key, 1), S_box_1, S_box_2, _ROUNDS)
-    test2 = baby_des_encrypt((L1 << 6) | (R1), _barrel_shift_left(possible_key, 1), S_box_1, S_box_2, _ROUNDS)
-    if test1 != test2: # and baby_des_encrypt((L1[1] << 6) | (R1[1]), possible_key, S_box_1, S_box_2, 3) == ((L4[1] << 3) | R4[1]):
+    L0 = 0b000111
+    R0 = 0b011011
+    test1 = baby_des_encrypt((L0 << 6) | (R0), _barrel_shift_left(rand_key, 0), S_box_1, S_box_2, _ROUNDS)
+    test2 = baby_des_encrypt((L0 << 6) | (R0), _barrel_shift_left(possible_key, 0), S_box_1, S_box_2, _ROUNDS)
+    if test1 != test2: # and baby_des_encrypt((L0[1] << 6) | (R0[1]), possible_key, S_box_1, S_box_2, 3) == ((L4[1] << 3) | R4[1]):
         possible_key = possible_key ^ 0b001000000
 
     print("A hidden key ", bin(rand_key), " was generated. The program guessed the key to be ", \
